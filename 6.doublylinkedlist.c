@@ -1,5 +1,4 @@
 //6.Write a program to implement doubly linked list:
-
 #include <stdio.h>
 #include <conio.h>
 #include <stdlib.h>
@@ -12,148 +11,228 @@ struct node
 };
 typedef struct node *NODE;
 
-NODE createNode(int data)
+NODE getnode()
 {
-    NODE newNode = (NODE)malloc(sizeof(struct node));
-    newNode->data = data;
-    newNode->prev = NULL;
-    newNode->next = NULL;
-    return newNode;
-}
-
-NODE insert_front(NODE first)
-{
-    int data;
-    printf("Enter data: ");
-    scanf("%d", &data);
-    NODE newNode = createNode(data);
-    if (first == NULL)
-    {
-        first = newNode;
-        printf("%d inserted successfully.\n", data);
-        return first;
-    }
-    newNode->next = first;
-    first->prev = newNode;
-    first = newNode;
-    printf("%d inserted successfully at front.\n", data);
-    return first;
+    NODE temp;
+    temp = (NODE)malloc(sizeof(struct node));
+    return temp;
 }
 
 NODE insert_rear(NODE first)
 {
-    int data;
-    printf("Enter data: ");
-    scanf("%d", &data);
-    NODE newNode = createNode(data);
+    NODE temp, ptr;
+    temp = getnode();
+    printf("Enter the data: ");
+    scanf("%d", &temp->data);
+    printf("%d is successfully inserted\n", temp->data);
+    temp->next = temp->prev = NULL;
+
     if (first == NULL)
     {
-        first = newNode;
-        printf("%d inserted successfully.\n", data);
+        first = temp;
         return first;
     }
-    NODE temp = first;
-    while (temp->next != NULL)
-        temp = temp->next;
-    temp->next = newNode;
-    newNode->prev = temp;
-    printf("%d inserted successfully at rear.\n", data);
+
+    ptr = first;
+    while (ptr->next != NULL)
+        ptr = ptr->next;
+
+    ptr->next = temp;
+    temp->prev = ptr;
+    return first;
+}
+
+NODE insert_pos(NODE first)
+{
+    int pos, count = 1;
+    NODE temp, ptr;
+    temp = getnode();
+    temp->prev = temp->next = NULL;
+
+    if (first == NULL)
+    {
+        printf("Enter the data: ");
+        scanf("%d", &temp->data);
+        printf("%d is successfully inserted\n", temp->data);
+        first = temp;
+        return first;
+    }
+
+    printf("Enter the position: ");
+    scanf("%d", &pos);
+
+    ptr = first;
+    while (ptr->next != NULL)
+    {
+        ptr = ptr->next;
+        count++;
+    }
+
+    if (pos > count + 1 || pos <= 0)
+    {
+        printf("Invalid position\n");
+        free(temp);
+        return first;
+    }
+
+    printf("Enter the data: ");
+    scanf("%d", &temp->data);
+    printf("%d is successfully inserted\n", temp->data);
+
+    if (pos == 1)
+    {
+        temp->next = first;
+        first->prev = temp;
+        first = temp;
+        return first;
+    }
+
+    ptr = first;
+    count = 1;
+    while (count < pos - 1 && ptr->next != NULL)
+    {
+        ptr = ptr->next;
+        count++;
+    }
+
+    temp->next = ptr->next;
+    if (ptr->next != NULL)
+        ptr->next->prev = temp;
+    temp->prev = ptr;
+    ptr->next = temp;
+
     return first;
 }
 
 NODE delete_front(NODE first)
 {
+    NODE ptr;
     if (first == NULL)
     {
-        printf("List is empty.\n");
-        return first;
-    }
-    NODE temp = first;
-    printf("%d deleted successfully from front.\n", temp->data);
-    if (first->next == NULL)
-    {
-        free(temp);
+        printf("No node to delete\n");
         return NULL;
     }
+
+    ptr = first;
+    printf("%d is successfully deleted\n", ptr->data);
+
+    if (first->next == NULL)
+    {
+        free(ptr);
+        return NULL;
+    }
+
     first = first->next;
     first->prev = NULL;
-    free(temp);
+    free(ptr);
     return first;
 }
 
-NODE delete_rear(NODE first)
+NODE delete_pos(NODE first)
 {
+    int pos, count = 0;
+    NODE ptr;
+
     if (first == NULL)
     {
-        printf("List is empty.\n");
+        printf("No node\n");
         return first;
     }
-    NODE temp = first;
-    if (temp->next == NULL)
+
+    ptr = first;
+    while (ptr != NULL)
     {
-        printf("%d deleted successfully from rear.\n", temp->data);
-        free(temp);
-        return NULL;
+        count++;
+        ptr = ptr->next;
     }
-    while (temp->next != NULL)
-        temp = temp->next;
-    printf("%d deleted successfully from rear.\n", temp->data);
-    temp->prev->next = NULL;
-    free(temp);
+
+    printf("Enter the position: ");
+    scanf("%d", &pos);
+
+    if (pos <= 0 || pos > count)
+    {
+        printf("Invalid position\n");
+        return first;
+    }
+
+    if (pos == 1)
+    {
+        first = delete_front(first);
+        return first;
+    }
+
+    ptr = first;
+    for (int i = 1; i < pos; i++)
+        ptr = ptr->next;
+
+    printf("%d is successfully deleted\n", ptr->data);
+
+    if (ptr->prev != NULL)
+        ptr->prev->next = ptr->next;
+    if (ptr->next != NULL)
+        ptr->next->prev = ptr->prev;
+
+    free(ptr);
     return first;
 }
 
 void display(NODE first)
 {
+    NODE temp;
     if (first == NULL)
     {
-        printf("List is empty.\n");
+        printf("No nodes\n");
         return;
     }
-    NODE temp = first;
+
     printf("List elements: ");
-    while (temp != NULL)
-    {
+    for (temp = first; temp != NULL; temp = temp->next)
         printf("%d=>", temp->data);
-        temp = temp->next;
-    }
     printf("NULL\n");
 }
 
 void main()
 {
     NODE first = NULL;
-    int choice;
+    int option;
     clrscr();
+
     while (1)
     {
-        printf("\n---- DOUBLY LINKED LIST OPERATIONS ----\n");
-        printf("1. Insert Front\n2. Insert Rear\n3. Delete Front\n4. Delete Rear\n5. Display\n6. Exit\n");
+        printf("\nDOUBLY LINKED LIST OPERATIONS\n");
+        printf("1. Insert\n2. Delete\n3. Display\n4. Exit\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice);
-        switch (choice)
+        scanf("%d", &option);
+
+        switch (option)
         {
         case 1:
-            first = insert_front(first);
+            printf("1. Insert rear\n2. Insert position\nEnter your choice: ");
+            scanf("%d", &option);
+            if (option == 1)
+                first = insert_rear(first);
+            else if (option == 2)
+                first = insert_pos(first);
+            else
+                printf("Invalid choice\n");
             break;
+
         case 2:
-            first = insert_rear(first);
+            first = delete_pos(first);
             break;
+
         case 3:
-            first = delete_front(first);
-            break;
-        case 4:
-            first = delete_rear(first);
-            break;
-        case 5:
             display(first);
             break;
-        case 6:
+
+        case 4:
             printf("Exiting program...\n");
             exit(0);
+
         default:
-            printf("Invalid choice!\n");
+            printf("Invalid choice\n");
         }
+
         getch();
         clrscr();
     }
