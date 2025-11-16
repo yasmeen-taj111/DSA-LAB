@@ -1,9 +1,10 @@
-//8. Evaluation expression tree using binary tree
+//9. Evaluation expression tree using binary tree
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <math.h>
+#include<conio.h>
 
 struct node {
     char data;
@@ -49,13 +50,14 @@ float eval(NODE root){
         case '*': return eval(root->lchild) * eval(root->rchild);
         case '/': return eval(root->lchild) / eval(root->rchild);
         case '^': return pow(eval(root->lchild), eval(root->rchild));
+        default : return 0;
     }
-    return 0;
     
 }
 
 int main() {
     char postfix[20];
+    clrscr();
     float result;
 
     printf("Enter postfix expression: ");
@@ -65,6 +67,7 @@ int main() {
     result = eval(root);
 
     printf("Result = %f\n", result);
+    getch();
     return 0;
 }
 
